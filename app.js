@@ -1,6 +1,7 @@
 const uploadInput = document.getElementById("uploadInput");
 const canvas = document.getElementById("myCanvas");
 const context = canvas.getContext("2d");
+const colorPicker = document.getElementById("colorPicker");
 let image;
 
 // 上傳圖片
@@ -21,9 +22,9 @@ uploadInput.addEventListener("change", function (event) {
 });
 
 let isDrawing = false;
-let circles = [];
+let tool = "brush";
 let startCoordinates = { x: 0, y: 0 };
-let radius = 0;
+let brushColor = "#000000";
 
 // 監聽滑鼠按下事件
 canvas.addEventListener("mousedown", function (event) {
@@ -34,50 +35,45 @@ canvas.addEventListener("mousedown", function (event) {
 // 監聽滑鼠移動事件
 canvas.addEventListener("mousemove", function (event) {
   if (isDrawing) {
-    // 清除 canvas
-    // context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 將上傳的圖片放入 Canvas
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    // 繪製已保存的圓圈
-    for (let i = 0; i < circles.length; i++) {
-      const circle = circles[i];
-      context.beginPath();
-      context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-      context.lineWidth = 5;
-      context.strokeStyle = "Red";
-      context.stroke();
-    }
-
-    // 計算圓圈半徑
     const currentCoordinates = getMouseCoordinates(canvas, event);
-    radius = getDistance(startCoordinates, currentCoordinates);
-
-    // 繪製圓圈
-    context.beginPath();
-    context.arc(startCoordinates.x, startCoordinates.y, radius, 0, 2 * Math.PI);
-    context.lineWidth = 5;
-    context.strokeStyle = "Red";
-    context.stroke();
+    draw(startCoordinates, currentCoordinates);
+    startCoordinates = currentCoordinates;
   }
 });
 
 // 監聽滑鼠放開事件
-canvas.addEventListener("mouseup", function (event) {
-  if (isDrawing) {
-    isDrawing = false;
-
-    // 將完成的圓圈保存到陣列中
-    circles.push({
-      x: startCoordinates.x,
-      y: startCoordinates.y,
-      radius: radius,
-      brushSize: 5,
-      brushColor: "Red",
-    });
-  }
+canvas.addEventListener("mouseup", function () {
+  isDrawing = false;
 });
+
+colorPicker.addEventListener("input", function () {
+  brushColor = colorPicker.value;
+});
+
+function draw(start, end) {
+  context.beginPath();
+  context.moveTo(start.x, start.y);
+  context.lineTo(end.x, end.y);
+
+  if (tool === "brush") {
+    context.lineWidth = 5;
+    context.strokeStyle = brushColor;
+  } else if (tool === "highlighter") {
+    context.lineWidth = 10;
+    context.strokeStyle = brushColor;
+    context.globalAlpha = 0.5;
+  } else if (tool === "eraser") {
+    context.lineWidth = 10;
+    context.strokeStyle = "White";
+  }
+
+  context.stroke();
+  context.globalAlpha = 1.0;
+}
+
+function setTool(selectedTool) {
+  tool = selectedTool;
+}
 
 // 還原 Canvas
 function resetCanvas() {
@@ -108,6 +104,6 @@ function getMouseCoordinates(canvas, event) {
 // 計算兩點之間的距離
 function getDistance(point1, point2) {
   return Math.sqrt(
-    Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2)
+    Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point2.y, 2)
   );
 }

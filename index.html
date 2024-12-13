@@ -4,15 +4,19 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Test</title>
+    <title>Canvas Drawing</title>
   </head>
   <body>
     <input type="file" id="uploadInput" />
     <br />
     <canvas id="myCanvas" width="500" height="500"></canvas>
     <br />
-    <button onclick="resetCanvas()">還原</button>
-    <button onclick="downloadCanvas()">下載完成的圖片</button>
+    <button onclick="setTool('brush')">Brush</button>
+    <button onclick="setTool('highlighter')">Highlighter</button>
+    <button onclick="setTool('eraser')">Eraser</button>
+    <input type="color" id="colorPicker" value="#000000" />
+    <button onclick="resetCanvas()">Reset</button>
+    <button onclick="downloadCanvas()">Download</button>
 
     <script src="./app.js"></script>
   </body>
